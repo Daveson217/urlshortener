@@ -6,11 +6,9 @@ import string
 from django.core.exceptions import ObjectDoesNotExist
 from django.views.generic import TemplateView
 from django.views.generic.edit import CreateView
+from django.shortcuts import redirect
 from django.urls import reverse, reverse_lazy
 from .models import Link
-# class HomePageView(TemplateView):
-#     template_name = 'home.html'
-    
 
 def generate_shortened_link():
     # get random string of letters and digits
@@ -33,24 +31,19 @@ class LinkCreateView(CreateView):
     model = Link
     template_name = "home.html"    
     fields = ['full_link']
-    shortened_link = 'abcderg'
-    success_url = ''
-    #extra_context={'shortened_link': shortened_link}    
+    success_url = ''   
     
     def form_valid(self, form):
         """If the form is valid, save the associated model."""
         shortened_link = generate_shortened_link()
-        form.instance.short_link = shortened_link 
-        self.shortened_link = shortened_link      
-        self.success_url = reverse_lazy('return_shortened_link', args=[shortened_link])        
-        self.get_context_data()['shortened_link'] = self.shortened_link
-        print('shortened: ', self.get_context_data()['shortened_link'])
-        return super().form_valid(form)
-    
-    def get_context_data(self, **kwargs):
-        context = super(LinkCreateView, self).get_context_data(**kwargs)
-        context['shortened_link'] = self.shortened_link
-        return context
-    
+        form.instance.short_link = shortened_link    
+        #self.success_url = reverse_lazy('return_shortened_link', args=[shortened_link])   
+        self.object = form.save()     
+        return redirect(reverse('return_shortened_link', kwargs={ 'short_link': shortened_link }))
+        #return super().form_valid(form)
 
-
+def shortened_link_redirect_view(request, short_link):
+    link = Link.objects.get(short_link=short_link)
+    full_url = link.full_link
+    
+    return redirect(full_url) 

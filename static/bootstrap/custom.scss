@@ -1,0 +1,18 @@
+/* import only the necessary Bootstrap files */
+@import "scss/functions"; 
+@import "scss/variables"; 
+@import "scss/mixins"; 
+@import "scss/bootstrap"; 
+
+/* -------begin customization-------- */
+$enable-gradients: false;
+/* change the primary theme color to red */
+$theme-colors: (
+  primary: #6262e4,
+);
+
+
+/* -------end customization-------- */
+
+/* finally, import Bootstrap to set the changes! */
+@import "scss/bootswatch";
